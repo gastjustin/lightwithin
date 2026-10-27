@@ -348,6 +348,24 @@
   form .btn-solid:hover{background:var(--gold-light);}
   .form-note{font-size:0.8rem; opacity:0.6; margin-top:4px;}
 
+  /* ---------- SCHEDULING MODAL ---------- */
+  .sched-modal{
+    position:fixed; inset:0; z-index:300; display:none;
+    align-items:center; justify-content:center; padding:20px;
+    background:rgba(59,46,34,0.7);
+  }
+  .sched-modal.open{display:flex;}
+  .sched-box{
+    position:relative; background:var(--ivory); width:100%; max-width:860px;
+    height:90vh; border-radius:4px; overflow:hidden;
+  }
+  .sched-box iframe{width:100%; height:100%; border:0;}
+  .sched-close{
+    position:absolute; top:6px; right:10px; z-index:2; background:var(--ivory);
+    border:1px solid var(--line); border-radius:50%; width:34px; height:34px;
+    font-size:1.2rem; line-height:1; cursor:pointer; color:var(--espresso);
+  }
+
   /* ---------- FOOTER ---------- */
   footer{
     background:var(--espresso); color:rgba(247,240,228,0.6);
@@ -396,7 +414,7 @@
       <a href="#gallery">Gallery</a>
       <a href="#contact">Contact</a>
     </nav>
-    <a href="#contact" class="nav-cta">Book a Session </a>
+    <a href="#contact" class="nav-cta" data-acuity>Book a Session </a>
   </div>
 </header>
 
@@ -408,7 +426,7 @@
       Reiki and sound therapy sessions designed to help calm the nervous system, reduce stress, and create space for deep relaxation and renewal. By combining gentle energy work with the therapeutic vibrations of singing bowls and other sound instruments, each session supports your body's natural ability to restore balance and well-being.
   </p>
   <div class="hero-ctas">
-    <a href="#contact" class="btn btn-solid">Book a Session</a>
+    <a href="#contact" class="btn btn-solid" data-acuity>Book a Session</a>
     <a href="#services" class="btn btn-outline">View Services</a>
   </div>
   <div class="scroll-cue"><span>Scroll</span><div class="line"></div></div>
@@ -561,7 +579,8 @@
     <div class="reveal">
       <span class="eyebrow">Get In Touch</span>
       <h2 style="margin-top:10px; font-size:clamp(1.9rem,3.4vw,2.5rem);">Book Your Session</h2>
-      <p style="margin-top:16px;">Fill out the form and we'll be in touch within a day to confirm your time. Or reach out directly below.</p>
+      <p style="margin-top:16px;">Schedule your session online at a time that works for you, or send a request using the form and we'll be in touch within a day to confirm your time.</p>
+      <button type="button" class="btn btn-solid" style="margin-top:22px; background:var(--gold); color:var(--espresso); border:none; cursor:pointer;" data-acuity>Schedule Online</button>
       <div class="contact-detail">
         <div><strong>Studio Hours</strong>Available Upon Request</div>
         <div><strong>Location</strong>Springville, UT (address sent upon booking)</div>
@@ -611,7 +630,31 @@
   </div>
 </footer>
 
+<div class="sched-modal" id="schedModal" role="dialog" aria-modal="true" aria-label="Schedule a session">
+  <div class="sched-box">
+    <button type="button" class="sched-close" id="schedClose" aria-label="Close">&times;</button>
+    <iframe id="schedFrame" title="Schedule appointment" data-src="https://app.acuityscheduling.com/schedule.php?owner=40156938"></iframe>
+  </div>
+</div>
+<script src="https://embed.acuityscheduling.com/js/embed.js" async></script>
+
 <script>
+  // Acuity scheduling modal
+  (function(){
+    const modal = document.getElementById('schedModal');
+    const frame = document.getElementById('schedFrame');
+    const open = e => {
+      e.preventDefault();
+      if(!frame.src) frame.src = frame.dataset.src;
+      modal.classList.add('open');
+      document.body.style.overflow = 'hidden';
+    };
+    const close = () => { modal.classList.remove('open'); document.body.style.overflow = ''; };
+    document.querySelectorAll('[data-acuity]').forEach(el => el.addEventListener('click', open));
+    document.getElementById('schedClose').addEventListener('click', close);
+    modal.addEventListener('click', e => { if(e.target === modal) close(); });
+    document.addEventListener('keydown', e => { if(e.key === 'Escape') close(); });
+  })();
   // scroll reveal
   const reveals = document.querySelectorAll('.reveal');
   const io = new IntersectionObserver((entries)=>{
